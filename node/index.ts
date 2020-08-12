@@ -9,6 +9,7 @@ import {
 import { Clients } from './clients'
 import { analytics } from './handlers/analytics'
 import { updateLiveUsers } from './event/liveUsersUpdate'
+import { productList } from './resolvers/products'
 
 // Create a LRU memory cache for the Status client.
 // The @vtex/api HttpClient respects Cache-Control headers and uses the provided cache.
@@ -34,20 +35,27 @@ export default new Service<Clients, State, ParamsContext>({
         retries: 2,
         timeout: 10000,
       },
+      events: {
+        exponentialTimeoutCoefficient: 2,
+        exponentialBackoffCoefficient: 2,
+        initialBackoffDelay: 50,
+        retries: 1,
+        timeout: TREE_SECONDS_MS,
+        concurrency: CONCURRENCY,
+      },
     },
   },
-  events: {
-    liveUsersUpdate: updateLiveUsers,
-    exponentialTimeoutCoefficient: 2,
-    exponentialBackoffCoefficient: 2,
-    initialBackoffDelay: 50,
-    retries: 1,
-    timeout: TREE_SECONDS_MS,
-    concurrency: CONCURRENCY,
-  },
+  events: {liveUsersUpdate: updateLiveUsers},
   routes: {
     analytics: method({
       GET: [analytics],
     }),
+  },
+  graphql: {
+    resolvers: {
+      Query: {
+          productList,
+      },
+    },
   },
 })

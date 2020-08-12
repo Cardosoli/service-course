@@ -1,4 +1,5 @@
-import { AppClient } from '@vtex/api'
+import { AppClient, IOContext, InstanceOptions } from '@vtex/api'
+
 
 export default class Analytics extends AppClient {
     constructor(context: IOContext, options?: InstanceOptions) {
